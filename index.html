@@ -6,6 +6,106 @@
 <title>CB South Soccer 2025 — Season Analytics Dashboard</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
+/* ── LOGIN SCREEN ───────────────────────── */
+#login-screen {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(circle at top right, rgba(200,169,81,0.15), transparent 60%), #0F1A2E;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.login-card {
+  background: rgba(255,255,255,0.04);
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 18px;
+  padding: 40px 36px;
+  width: 320px;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+  animation: fadeIn 0.6s ease;
+}
+
+.login-logo {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 16px;
+  background: linear-gradient(135deg, #C8A951, #E8C97B);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 900;
+  font-size: 20px;
+  color: #0F1A2E;
+}
+
+.login-card h1 {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 800;
+  color: white;
+  letter-spacing: 1px;
+}
+
+.subtitle {
+  font-size: 12px;
+  color: rgba(255,255,255,0.5);
+  margin-bottom: 24px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.login-card input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.06);
+  color: white;
+  font-size: 14px;
+  outline: none;
+  margin-bottom: 14px;
+  transition: 0.2s;
+}
+
+.login-card input:focus {
+  border-color: #C8A951;
+  box-shadow: 0 0 0 2px rgba(200,169,81,0.2);
+}
+
+.login-card button {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
+  background: linear-gradient(135deg, #C8A951, #E8C97B);
+  color: #0F1A2E;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.login-card button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(200,169,81,0.35);
+}
+
+#error {
+  margin-top: 12px;
+  color: #ff6b6b;
+  font-size: 12px;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
   @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@300;400;500;600&display=swap');
 
   :root {
@@ -320,7 +420,18 @@
 </style>
 </head>
 <body>
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">CBS</div>
+    <h1>CB South Soccer</h1>
+    <p class="subtitle">Admin Access Required</p>
 
+    <input id="passwordInput" type="password" placeholder="Enter Password">
+    <button onclick="checkPassword()">Enter</button>
+
+    <p id="error"></p>
+  </div>
+</div>
 <div class="gold-strip"></div>
 <header>
   <div class="header-inner">
@@ -365,7 +476,7 @@
     <div class="award-card">
       <div class="award-icon">⚽</div>
       <div class="award-body">
-        <div class="award-title">Golden Boot Award</div>
+        <div class="award-title">Golden Boot — Top Scorer</div>
         <div class="award-winner">Jackson Tait</div>
         <div class="award-detail">20 goals in 18 games. More than a goal per game average. Dominant, consistent, irreplaceable striker.</div>
       </div>
@@ -373,7 +484,7 @@
     <div class="award-card">
       <div class="award-icon">🎯</div>
       <div class="award-body">
-        <div class="award-title">Playmaker Award</div>
+        <div class="award-title">Playmaker — Top Assists</div>
         <div class="award-winner">Tyler Jaskelewicz</div>
         <div class="award-detail">9 assists — highest on the team. Creative force behind the team's attacking play with key passes and xA of 4.08.</div>
       </div>
@@ -437,7 +548,7 @@
     <div class="award-card">
       <div class="award-icon">🔥</div>
       <div class="award-body">
-        <div class="award-title">Iron Man — Minutes Played</div>
+        <div class="award-title">Minutes Played</div>
         <div class="award-winner">Ryan Wiener (1412) / Josh Dozier (1497)</div>
         <div class="award-detail">Both played all 18 games with 1400+ minutes — alongside Adrien Okoniewski and Rowan McDonald. Unmatched availability.</div>
       </div>
@@ -594,6 +705,19 @@
 </div><!-- /main -->
 
 <script>
+function checkPassword() {
+  const input = document.getElementById("passwordInput").value;
+  const correctPassword = "southsoccer25";
+
+  if (input === correctPassword) {
+    document.getElementById("login-screen").style.display = "none";
+  } else {
+    document.getElementById("error").textContent = "Incorrect password";
+  }
+}
+document.getElementById("passwordInput").addEventListener("keypress", function(e) {
+  if (e.key === "Enter") checkPassword();
+});
 const PLAYERS = [{"name":"Adrien Okoniewski","short":"Adrien O.","group":"Midfielders","games":18,"goals":2,"assists":5,"minutes":1503,"passes":651,"pass_acc":63.7,"xg":2.61,"xa":3.96,"shots":46,"key_passes":46,"tackles":63,"interceptions":30,"clearances":18,"recoveries":239,"ball_loss":286,"fouls":31,"total_dist":184.6,"avg_dist":10.3,"max_speed":29.2,"avg_speed":6.1,"sprints":57,"hi_events":617,"accels":1163},{"name":"Alex Centafont","short":"Alex C.","group":"Defenders","games":9,"goals":1,"assists":0,"minutes":262,"passes":86,"pass_acc":70.7,"xg":0.38,"xa":0.1,"shots":2,"key_passes":1,"tackles":6,"interceptions":10,"clearances":12,"recoveries":45,"ball_loss":47,"fouls":5,"total_dist":33.5,"avg_dist":4.2,"max_speed":27.0,"avg_speed":2.5,"sprints":10,"hi_events":97,"accels":249},{"name":"Alexander Otto","short":"Alexander O.","group":"Midfielders","games":18,"goals":0,"assists":0,"minutes":765,"passes":193,"pass_acc":74.0,"xg":0.4,"xa":0.25,"shots":5,"key_passes":9,"tackles":13,"interceptions":7,"clearances":4,"recoveries":72,"ball_loss":63,"fouls":5,"total_dist":96.3,"avg_dist":5.3,"max_speed":26.6,"avg_speed":3.3,"sprints":3,"hi_events":156,"accels":332},{"name":"Andriy Popelnytskiy","short":"Andriy P.","group":"Forwards","games":18,"goals":4,"assists":2,"minutes":917,"passes":167,"pass_acc":48.2,"xg":2.94,"xa":1.88,"shots":23,"key_passes":17,"tackles":14,"interceptions":14,"clearances":6,"recoveries":89,"ball_loss":108,"fouls":12,"total_dist":112.0,"avg_dist":6.2,"max_speed":28.4,"avg_speed":3.8,"sprints":80,"hi_events":451,"accels":736},{"name":"Dylan Lynch","short":"Dylan L.","group":"Defenders","games":9,"goals":0,"assists":1,"minutes":631,"passes":212,"pass_acc":52.9,"xg":0.74,"xa":0.81,"shots":3,"key_passes":9,"tackles":6,"interceptions":12,"clearances":18,"recoveries":80,"ball_loss":133,"fouls":5,"total_dist":69.8,"avg_dist":7.8,"max_speed":27.6,"avg_speed":4.8,"sprints":11,"hi_events":153,"accels":399},{"name":"Evan Nguyen","short":"Evan N.","group":"Midfielders","games":16,"goals":0,"assists":2,"minutes":481,"passes":100,"pass_acc":67.4,"xg":0.32,"xa":0.51,"shots":3,"key_passes":4,"tackles":5,"interceptions":14,"clearances":9,"recoveries":41,"ball_loss":54,"fouls":3,"total_dist":71.3,"avg_dist":4.5,"max_speed":26.5,"avg_speed":2.6,"sprints":6,"hi_events":170,"accels":567},{"name":"Finn Commins","short":"Finn C.","group":"Defenders","games":13,"goals":2,"assists":0,"minutes":1011,"passes":362,"pass_acc":56.5,"xg":2.22,"xa":0.47,"shots":11,"key_passes":4,"tackles":13,"interceptions":33,"clearances":45,"recoveries":150,"ball_loss":163,"fouls":11,"total_dist":112.4,"avg_dist":8.6,"max_speed":30.2,"avg_speed":5.1,"sprints":44,"hi_events":275,"accels":609},{"name":"Jackson Tait","short":"Jackson T.","group":"Forwards","games":18,"goals":20,"assists":4,"minutes":1385,"passes":239,"pass_acc":67.4,"xg":12.38,"xa":3.51,"shots":67,"key_passes":22,"tackles":12,"interceptions":9,"clearances":3,"recoveries":98,"ball_loss":103,"fouls":25,"total_dist":114.4,"avg_dist":7.2,"max_speed":31.0,"avg_speed":4.3,"sprints":96,"hi_events":540,"accels":994},{"name":"James Fash","short":"James F.","group":"Defenders","games":6,"goals":0,"assists":0,"minutes":148,"passes":48,"pass_acc":49.4,"xg":0.41,"xa":0.01,"shots":2,"key_passes":0,"tackles":3,"interceptions":0,"clearances":7,"recoveries":22,"ball_loss":26,"fouls":1,"total_dist":22.1,"avg_dist":3.2,"max_speed":28.6,"avg_speed":1.9,"sprints":9,"hi_events":63,"accels":177},{"name":"Jose Lucas-Avila","short":"Jose L.","group":"Defenders","games":12,"goals":0,"assists":1,"minutes":344,"passes":101,"pass_acc":37.6,"xg":0.04,"xa":0.16,"shots":1,"key_passes":3,"tackles":8,"interceptions":10,"clearances":9,"recoveries":31,"ball_loss":59,"fouls":2,"total_dist":52.5,"avg_dist":4.4,"max_speed":26.5,"avg_speed":2.7,"sprints":11,"hi_events":123,"accels":229},{"name":"Josh Dozier","short":"Josh D.","group":"Midfielders","games":18,"goals":3,"assists":5,"minutes":1497,"passes":715,"pass_acc":73.0,"xg":5.33,"xa":1.94,"shots":35,"key_passes":28,"tackles":63,"interceptions":49,"clearances":48,"recoveries":278,"ball_loss":210,"fouls":27,"total_dist":192.6,"avg_dist":10.7,"max_speed":30.4,"avg_speed":6.4,"sprints":82,"hi_events":703,"accels":1612},{"name":"Leo Propato","short":"Leo P.","group":"Forwards","games":14,"goals":1,"assists":1,"minutes":384,"passes":65,"pass_acc":47.1,"xg":0.91,"xa":0.45,"shots":3,"key_passes":2,"tackles":7,"interceptions":2,"clearances":2,"recoveries":31,"ball_loss":43,"fouls":3,"total_dist":48.3,"avg_dist":3.7,"max_speed":28.6,"avg_speed":2.2,"sprints":32,"hi_events":178,"accels":206},{"name":"Luca Giglio","short":"Luca G.","group":"Defenders","games":14,"goals":0,"assists":0,"minutes":677,"passes":255,"pass_acc":73.1,"xg":0.32,"xa":0.25,"shots":6,"key_passes":5,"tackles":10,"interceptions":13,"clearances":21,"recoveries":107,"ball_loss":91,"fouls":3,"total_dist":75.4,"avg_dist":5.4,"max_speed":27.9,"avg_speed":3.2,"sprints":25,"hi_events":241,"accels":493},{"name":"Luca Yencha","short":"Luca Y.","group":"Forwards","games":7,"goals":0,"assists":2,"minutes":189,"passes":41,"pass_acc":57.0,"xg":0.0,"xa":0.54,"shots":0,"key_passes":3,"tackles":1,"interceptions":0,"clearances":1,"recoveries":22,"ball_loss":16,"fouls":1,"total_dist":6.5,"avg_dist":6.5,"max_speed":25.5,"avg_speed":3.7,"sprints":2,"hi_events":17,"accels":60},{"name":"Lucas Tyson","short":"Lucas T.","group":"Defenders","games":15,"goals":4,"assists":0,"minutes":1228,"passes":516,"pass_acc":65.1,"xg":3.01,"xa":0.56,"shots":20,"key_passes":3,"tackles":15,"interceptions":23,"clearances":86,"recoveries":200,"ball_loss":212,"fouls":11,"total_dist":130.1,"avg_dist":8.7,"max_speed":28.9,"avg_speed":5.3,"sprints":51,"hi_events":329,"accels":813},{"name":"Luka Jonjic","short":"Luka J.","group":"Forwards","games":3,"goals":1,"assists":0,"minutes":105,"passes":20,"pass_acc":70.7,"xg":0.47,"xa":0.07,"shots":3,"key_passes":1,"tackles":7,"interceptions":0,"clearances":0,"recoveries":8,"ball_loss":7,"fouls":1,"total_dist":13.3,"avg_dist":3.3,"max_speed":25.3,"avg_speed":2.0,"sprints":1,"hi_events":29,"accels":78},{"name":"Nathan Monser","short":"Nathan M.","group":"Forwards","games":15,"goals":3,"assists":2,"minutes":940,"passes":184,"pass_acc":51.2,"xg":1.6,"xa":0.52,"shots":12,"key_passes":11,"tackles":17,"interceptions":15,"clearances":11,"recoveries":73,"ball_loss":108,"fouls":12,"total_dist":107.6,"avg_dist":7.2,"max_speed":32.1,"avg_speed":4.2,"sprints":79,"hi_events":378,"accels":620},{"name":"Rowan McDonald","short":"Rowan M.","group":"Defenders","games":18,"goals":2,"assists":6,"minutes":1404,"passes":672,"pass_acc":64.4,"xg":2.01,"xa":1.24,"shots":12,"key_passes":14,"tackles":20,"interceptions":60,"clearances":103,"recoveries":290,"ball_loss":315,"fouls":8,"total_dist":129.8,"avg_dist":7.6,"max_speed":31.4,"avg_speed":4.6,"sprints":79,"hi_events":379,"accels":854},{"name":"Ryan Wiener","short":"Ryan W.","group":"Goalkeeper","games":17,"goals":0,"assists":0,"minutes":1412,"passes":324,"pass_acc":75.1,"xg":0.0,"xa":0.06,"shots":0,"key_passes":0,"tackles":0,"interceptions":2,"clearances":8,"recoveries":134,"ball_loss":96,"fouls":0,"total_dist":0,"avg_dist":0,"max_speed":0,"avg_speed":0,"sprints":0,"hi_events":0,"accels":0},{"name":"Tyler Jaskelewicz","short":"Tyler J.","group":"Forwards","games":18,"goals":10,"assists":9,"minutes":1286,"passes":291,"pass_acc":60.9,"xg":8.95,"xa":4.08,"shots":69,"key_passes":52,"tackles":28,"interceptions":17,"clearances":12,"recoveries":134,"ball_loss":208,"fouls":14,"total_dist":148.0,"avg_dist":8.2,"max_speed":30.0,"avg_speed":4.9,"sprints":161,"hi_events":758,"accels":994},{"name":"Vadym Sokol","short":"Vadym S.","group":"Defenders","games":9,"goals":0,"assists":0,"minutes":262,"passes":60,"pass_acc":47.5,"xg":0.04,"xa":0.14,"shots":2,"key_passes":0,"tackles":4,"interceptions":9,"clearances":6,"recoveries":29,"ball_loss":36,"fouls":4,"total_dist":35.1,"avg_dist":3.9,"max_speed":28.7,"avg_speed":2.4,"sprints":13,"hi_events":122,"accels":247},{"name":"Zach Prest","short":"Zach P.","group":"Defenders","games":11,"goals":0,"assists":0,"minutes":300,"passes":64,"pass_acc":43.3,"xg":0.24,"xa":0.09,"shots":1,"key_passes":3,"tackles":3,"interceptions":4,"clearances":16,"recoveries":41,"ball_loss":35,"fouls":2,"total_dist":34.9,"avg_dist":2.7,"max_speed":26.8,"avg_speed":1.7,"sprints":6,"hi_events":78,"accels":199}];
 
 const GROUP_COLORS = {
