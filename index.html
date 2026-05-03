@@ -1,0 +1,1090 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CB South Soccer — 2025 Season Analytics</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy:       #002D72;
+  --navy-mid:   #0A3D8F;
+  --blue:       #1B5FA6;
+  --blue-light: #4A90D9;
+  --blue-pale:  #D6E8F7;
+  --blue-strip: #2563AE;
+  --white:      #FFFFFF;
+  --off-white:  #F5F8FD;
+  --gray:       #EEF1F8;
+  --gray-mid:   #CDD5E8;
+  --dark-text:  #0D1B3E;
+  --mid-text:   #4A5B7A;
+  --green:      #1A7A3C;
+  --red:        #B52B27;
+  --amber:      #D4820A;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Barlow',sans-serif;background:var(--off-white);color:var(--dark-text);min-height:100vh}
+
+/* ── LOGIN ─────────────────────────────────── */
+#login-screen{position:fixed;inset:0;background:linear-gradient(135deg,#001440 0%,#002D72 60%,#1B5FA6 100%);display:flex;align-items:center;justify-content:center;z-index:9999}
+#login-screen::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")}
+.login-card{position:relative;background:rgba(255,255,255,0.07);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.12);border-radius:20px;padding:44px 38px;width:340px;text-align:center;box-shadow:0 24px 60px rgba(0,0,0,0.5);animation:fadeUp .6s ease}
+.login-logo{width:78px;height:78px;object-fit:contain;border-radius:50%;background:white;padding:8px;margin:0 auto 18px;display:block}
+.login-card h1{font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:900;color:#fff;letter-spacing:1px;margin-bottom:4px}
+.login-sub{font-size:12px;color:rgba(255,255,255,0.45);margin-bottom:28px;text-transform:uppercase;letter-spacing:1.5px}
+.login-card input{width:100%;padding:13px 16px;border-radius:10px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.08);color:white;font-size:14px;outline:none;margin-bottom:14px;transition:.2s;font-family:'Barlow',sans-serif}
+.login-card input::placeholder{color:rgba(255,255,255,0.35)}
+.login-card input:focus{border-color:var(--blue-light);box-shadow:0 0 0 3px rgba(74,144,217,0.25)}
+.login-card button{width:100%;padding:13px;border-radius:10px;border:none;background:linear-gradient(135deg,#1B5FA6,#4A90D9);color:#fff;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:15px;letter-spacing:1.5px;cursor:pointer;transition:.2s}
+.login-card button:hover{transform:translateY(-1px);box-shadow:0 8px 20px rgba(27,95,166,0.5)}
+#error{margin-top:12px;color:#ff8080;font-size:12px;min-height:18px}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── HEADER ─────────────────────────────────── */
+header{background:var(--navy);position:relative;overflow:hidden}
+header::after{content:'';position:absolute;top:-60px;right:-60px;width:380px;height:380px;border-radius:50%;background:radial-gradient(circle,rgba(74,144,217,.12),transparent 70%);pointer-events:none}
+.header-inner{max-width:1440px;margin:0 auto;padding:32px 40px 26px;display:flex;align-items:center;gap:24px}
+.logo-badge{width:68px;height:68px;object-fit:contain;border-radius:50%;background:#fff;padding:7px;flex-shrink:0}
+.header-text h1{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:38px;color:#fff;letter-spacing:2px;line-height:1}
+.header-text h1 span{color:var(--blue-light)}
+.header-text p{font-size:12px;color:rgba(255,255,255,.5);margin-top:5px;letter-spacing:2px;text-transform:uppercase}
+.header-stats{margin-left:auto;display:flex;gap:28px}
+.hstat{text-align:center}
+.hstat .val{font-family:'Barlow Condensed',sans-serif;font-size:34px;font-weight:900;color:var(--blue-light);line-height:1}
+.hstat .lbl{font-size:10px;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:1px;margin-top:2px}
+.blue-strip{height:3px;background:linear-gradient(90deg,var(--navy-mid),var(--blue-light),var(--blue-strip))}
+
+/* ── NAV ─────────────────────────────────────── */
+.tab-bar-wrap{background:var(--navy-mid);position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,.3)}
+.tab-bar{max-width:1440px;margin:0 auto;padding:0 40px;display:flex;overflow-x:auto;scrollbar-width:none}
+.tab-bar::-webkit-scrollbar{display:none}
+.tab-btn{padding:14px 22px;font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;color:rgba(255,255,255,.5);letter-spacing:1px;text-transform:uppercase;border:none;background:none;cursor:pointer;border-bottom:3px solid transparent;transition:all .2s;white-space:nowrap;flex-shrink:0}
+.tab-btn:hover{color:rgba(255,255,255,.85)}
+.tab-btn.active{color:var(--blue-light);border-bottom-color:var(--blue-light)}
+
+/* ── MAIN ─────────────────────────────────────── */
+.main{max-width:1440px;margin:0 auto;padding:28px 40px}
+.tab-content{display:none}
+.tab-content.active{display:block}
+
+/* ── SECTION TITLES ───────────────────────────── */
+.section-title{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:800;color:var(--navy);letter-spacing:1.5px;text-transform:uppercase;display:flex;align-items:center;gap:12px;margin-bottom:18px;margin-top:8px}
+.section-title::after{content:'';flex:1;height:2px;background:linear-gradient(90deg,var(--blue-light),transparent)}
+
+/* ── KPI STRIP ────────────────────────────────── */
+.kpi-strip{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;margin-bottom:28px}
+.kpi{background:#fff;border-radius:10px;border:1px solid var(--gray-mid);padding:16px 18px;box-shadow:0 1px 6px rgba(0,45,114,.05)}
+.kpi .kval{font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:900;color:var(--navy);line-height:1}
+.kpi .klbl{font-size:11px;color:var(--mid-text);text-transform:uppercase;letter-spacing:.8px;margin-top:3px}
+.kpi.blue .kval{color:var(--blue)}
+.kpi.green .kval{color:var(--green)}
+
+/* ── AWARD CARDS ──────────────────────────────── */
+.awards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:14px;margin-bottom:28px}
+.award-card{background:#fff;border-radius:12px;border:1px solid var(--gray-mid);padding:18px 20px;display:flex;gap:14px;align-items:flex-start;box-shadow:0 2px 8px rgba(0,45,114,.05);transition:transform .15s,box-shadow .15s}
+.award-card:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(0,45,114,.1)}
+.award-icon{font-size:28px;line-height:1;flex-shrink:0;margin-top:2px}
+.award-title{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;color:var(--blue);text-transform:uppercase;letter-spacing:1px}
+.award-winner{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:800;color:var(--navy);margin:2px 0 3px}
+.award-detail{font-size:11px;color:var(--mid-text);line-height:1.4}
+
+/* ── LEADERS ──────────────────────────────────── */
+.leaders-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;margin-bottom:28px}
+.leader-card{background:#fff;border-radius:12px;border:1px solid var(--gray-mid);overflow:hidden;box-shadow:0 1px 6px rgba(0,45,114,.05)}
+.leader-header{background:var(--navy);padding:10px 16px;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:var(--blue-light);letter-spacing:1.5px;text-transform:uppercase}
+.leader-row{display:flex;align-items:center;padding:9px 16px;gap:12px;border-bottom:1px solid var(--gray);transition:background .15s}
+.leader-row:last-child{border-bottom:none}
+.leader-row:hover{background:var(--off-white)}
+.leader-rank{font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:800;color:var(--gray-mid);min-width:22px}
+.leader-rank.gold{color:var(--blue-light)}
+.leader-name{flex:1;font-size:13px;font-weight:500}
+.leader-val{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:800;color:var(--navy)}
+
+/* ── CHARTS ───────────────────────────────────── */
+.charts-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;margin-bottom:28px}
+.chart-full{grid-column:1/-1}
+.chart-card{background:#fff;border-radius:12px;border:1px solid var(--gray-mid);padding:22px;box-shadow:0 2px 10px rgba(0,45,114,.05)}
+.chart-title{font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:800;color:var(--navy);text-transform:uppercase;letter-spacing:1px;margin-bottom:16px;padding-bottom:10px;border-bottom:2px solid var(--blue-pale)}
+canvas{max-height:300px}
+
+/* ── FILTER ROW ───────────────────────────────── */
+.filter-row{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;align-items:center}
+.filter-btn{padding:6px 16px;border-radius:999px;border:1.5px solid var(--gray-mid);background:#fff;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:.5px;color:var(--mid-text);transition:all .15s}
+.filter-btn:hover,.filter-btn.active{background:var(--navy);border-color:var(--navy);color:#fff}
+.filter-btn[data-group="Forwards"].active{background:var(--green);border-color:var(--green)}
+.filter-btn[data-group="Midfielders"].active{background:var(--blue);border-color:var(--blue)}
+.filter-btn[data-group="Defenders"].active{background:#6B46A0;border-color:#6B46A0}
+.filter-btn[data-group="Goalkeeper"].active{background:var(--red);border-color:var(--red)}
+.filter-label{font-size:11px;color:var(--mid-text);text-transform:uppercase;letter-spacing:1px;font-weight:600}
+
+/* ── TABLES ───────────────────────────────────── */
+.table-wrap{overflow-x:auto;border-radius:12px;box-shadow:0 2px 10px rgba(0,45,114,.07)}
+table{width:100%;border-collapse:collapse;background:#fff;font-size:13px}
+thead tr th{background:var(--navy);padding:11px 12px;font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;color:var(--blue-light);text-align:left;letter-spacing:.8px;text-transform:uppercase;cursor:pointer;white-space:nowrap;transition:background .15s}
+thead tr th:hover{background:var(--navy-mid)}
+thead tr.th-group th{background:#0D2060;font-size:11px;color:rgba(255,255,255,.5);padding:5px 12px;letter-spacing:1px}
+td{padding:9px 12px;border-bottom:1px solid var(--gray);white-space:nowrap;vertical-align:middle}
+tr:hover td{background:var(--off-white)}
+tr:last-child td{border-bottom:none}
+.pos-badge{display:inline-block;padding:2px 7px;border-radius:999px;font-size:10px;font-weight:700;font-family:'Barlow Condensed',sans-serif;letter-spacing:.5px}
+.pos-Forwards{background:#D4EDDA;color:var(--green)}
+.pos-Midfielders{background:var(--blue-pale);color:var(--blue)}
+.pos-Defenders{background:#EDE0F7;color:#6B46A0}
+.pos-Goalkeeper{background:#FDDEDE;color:var(--red)}
+.num-top{color:var(--green);font-weight:700}
+.num-bad{color:var(--red)}
+.num-strong{font-weight:700;color:var(--navy)}
+
+/* ── SPARKLINE MINI CHART ─────────────────────── */
+.sparkline{display:inline-block;width:60px;height:24px;vertical-align:middle}
+
+/* ── PRACTICE COMING SOON ─────────────────────── */
+.coming-soon-banner{background:linear-gradient(135deg,var(--navy) 0%,var(--navy-mid) 100%);border-radius:16px;padding:48px 40px;text-align:center;margin-bottom:28px;position:relative;overflow:hidden}
+.coming-soon-banner::before{content:'';position:absolute;top:-40px;right:-40px;width:250px;height:250px;border-radius:50%;background:radial-gradient(circle,rgba(74,144,217,.15),transparent 70%)}
+.coming-soon-banner h2{font-family:'Barlow Condensed',sans-serif;font-size:32px;font-weight:900;color:#fff;letter-spacing:2px;margin-bottom:8px}
+.coming-soon-banner .csub{font-size:13px;color:rgba(255,255,255,.55);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:20px}
+.coming-soon-banner p{color:rgba(255,255,255,.7);font-size:14px;max-width:600px;margin:0 auto;line-height:1.6}
+.cs-badge{display:inline-block;background:rgba(74,144,217,.25);border:1px solid rgba(74,144,217,.5);color:var(--blue-light);font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:1.5px;padding:5px 14px;border-radius:999px;text-transform:uppercase;margin-bottom:16px}
+.practice-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
+.practice-card{background:#fff;border-radius:12px;border:2px dashed var(--gray-mid);padding:22px;text-align:center;opacity:.7}
+.practice-card .pc-icon{font-size:28px;margin-bottom:10px}
+.practice-card .pc-title{font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
+.practice-card .pc-sub{font-size:12px;color:var(--mid-text)}
+
+/* ── TOOLTIP LEGEND ───────────────────────────── */
+.legend-dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px}
+
+/* ── RESPONSIVE ───────────────────────────────── */
+@media(max-width:900px){
+  .header-inner{padding:20px;flex-wrap:wrap}
+  .header-stats{gap:16px}
+  .main{padding:16px 16px}
+  .charts-grid{grid-template-columns:1fr}
+  .chart-full{grid-column:1}
+  .tab-bar{padding:0 16px}
+  .kpi-strip{grid-template-columns:repeat(3,1fr)}
+}
+</style>
+</head>
+<body>
+
+<!-- ── LOGIN ── -->
+<div id="login-screen">
+  <div class="login-card">
+    <img class="login-logo" src="https://raw.githubusercontent.com/cbssoccer/cbssoccer.github.io/main/cbslogo.png" onerror="this.style.display='none'" alt="CBS">
+    <h1>CB SOUTH FC</h1>
+    <div class="login-sub">2025 Season Analytics</div>
+    <input type="password" id="passwordInput" placeholder="Enter password" autocomplete="current-password">
+    <button onclick="checkPassword()">ACCESS DASHBOARD</button>
+    <div id="error"></div>
+  </div>
+</div>
+
+<!-- ── HEADER ── -->
+<div class="blue-strip"></div>
+<header>
+  <div class="header-inner">
+    <img class="logo-badge" src="https://raw.githubusercontent.com/cbssoccer/cbssoccer.github.io/main/cbslogo.png" onerror="this.style.display='none'" alt="CBS">
+    <div class="header-text">
+      <h1>CB <span>SOUTH</span> SOCCER</h1>
+      <p>2025 Varsity Season &nbsp;·&nbsp; Full Analytics Dashboard &nbsp;·&nbsp; PD + SciSports</p>
+    </div>
+    <div class="header-stats">
+      <div class="hstat"><div class="val">18</div><div class="lbl">Games</div></div>
+      <div class="hstat"><div class="val">52</div><div class="lbl">Goals</div></div>
+      <div class="hstat"><div class="val">46</div><div class="lbl">Assists</div></div>
+      <div class="hstat"><div class="val">22</div><div class="lbl">Players</div></div>
+    </div>
+  </div>
+</header>
+<div class="blue-strip"></div>
+
+<!-- ── NAV ── -->
+<div class="tab-bar-wrap">
+  <div class="tab-bar">
+    <button class="tab-btn active" onclick="showTab('overview',this)">🏆 Overview</button>
+    <button class="tab-btn" onclick="showTab('attacking',this)">⚽ Attacking</button>
+    <button class="tab-btn" onclick="showTab('passing',this)">🔑 Passing</button>
+    <button class="tab-btn" onclick="showTab('defending',this)">🛡 Defending</button>
+    <button class="tab-btn" onclick="showTab('physical',this)">⚡ Physical</button>
+    <button class="tab-btn" onclick="showTab('squad',this)">📋 Squad</button>
+    <button class="tab-btn" onclick="showTab('practice',this)">🏋 Practice</button>
+  </div>
+</div>
+
+<div class="main">
+
+<!-- ═══════════════════ OVERVIEW ═══════════════════ -->
+<div id="tab-overview" class="tab-content active">
+
+  <div class="kpi-strip">
+    <div class="kpi blue"><div class="kval">52</div><div class="klbl">Goals Scored</div></div>
+    <div class="kpi"><div class="kval">46</div><div class="klbl">Assists</div></div>
+    <div class="kpi green"><div class="kval">37.4</div><div class="klbl">Total xG</div></div>
+    <div class="kpi"><div class="kval">74%</div><div class="klbl">Best Pass Acc</div></div>
+    <div class="kpi blue"><div class="kval">192.6</div><div class="klbl">Most km (Dozier)</div></div>
+    <div class="kpi"><div class="kval">32.1</div><div class="klbl">Top Speed km/h</div></div>
+    <div class="kpi green"><div class="kval">20</div><div class="klbl">Tait Goals</div></div>
+    <div class="kpi"><div class="kval">9</div><div class="klbl">Tyler Assists</div></div>
+  </div>
+
+  <div class="section-title">Season Awards</div>
+  <div class="awards-grid">
+    <div class="award-card"><div class="award-icon">🏆</div><div><div class="award-title">Season MVP</div><div class="award-winner">Tyler Jaskelewicz</div><div class="award-detail">10G + 9A — most complete attacker. Led in assists, 2nd in goals, and logged 161 sprint events all season.</div></div></div>
+    <div class="award-card"><div class="award-icon">⚽</div><div><div class="award-title">Golden Boot</div><div class="award-winner">Jackson Tait</div><div class="award-detail">20 goals in 18 games. Led team in shots (67), xG (11.56), and offsides (15) — always on the edge of danger.</div></div></div>
+    <div class="award-card"><div class="award-icon">🎯</div><div><div class="award-title">Top Playmaker</div><div class="award-winner">Tyler Jaskelewicz</div><div class="award-detail">9 assists + 16 pre-key passes. 81% take-on success (57/70). Created 3 penalty situations.</div></div></div>
+    <div class="award-card"><div class="award-icon">🏃</div><div><div class="award-title">Distance King</div><div class="award-winner">Josh Dozier</div><div class="award-detail">192.6 km total — most on the team. 703 high-intensity events. True engine of the midfield.</div></div></div>
+    <div class="award-card"><div class="award-icon">⚡</div><div><div class="award-title">Speed Demon</div><div class="award-winner">Nathan Monser</div><div class="award-detail">32.1 km/h max speed — fastest on the roster. Used his pace to stretch defenses in transition.</div></div></div>
+    <div class="award-card"><div class="award-icon">🧱</div><div><div class="award-title">Defensive Rock</div><div class="award-winner">Rowan McDonald</div><div class="award-detail">18 games, 6 assists, 81% air duel win rate (35/43), 290 recoveries, 103 clearances, 60 interceptions.</div></div></div>
+    <div class="award-card"><div class="award-icon">🎖</div><div><div class="award-title">Set-Piece Specialist</div><div class="award-winner">Lucas Tyson</div><div class="award-detail">4 goals from CB — dominant at corners. 86 clearances season-best for defenders. 1 PK conceded in 15 games.</div></div></div>
+    <div class="award-card"><div class="award-icon">🤝</div><div><div class="award-title">Unsung Hero</div><div class="award-winner">Josh Dozier</div><div class="award-detail">3G+5A+3 pre-assists, 63 tackles, 49 int, 74% pass accuracy. Led team in both distance and defensive midfield stats.</div></div></div>
+    <div class="award-card"><div class="award-icon">📋</div><div><div class="award-title">Best Pass Accuracy</div><div class="award-winner">Ryan Wiener (GK)</div><div class="award-detail">74% overall — 91% on medium passes, 50% long. Excellent distribution from the back all season.</div></div></div>
+    <div class="award-card"><div class="award-icon">🌟</div><div><div class="award-title">Best Prospect</div><div class="award-winner">Alex Centafont</div><div class="award-detail">66% pass accuracy in 9 games, 100% take-on success (6/6), 1 goal. Strong upside as a fullback.</div></div></div>
+    <div class="award-card"><div class="award-icon">💥</div><div><div class="award-title">Take-On King</div><div class="award-winner">Rowan McDonald</div><div class="award-detail">88% take-on success (21/24) — elite efficiency. Rarely beaten when he drives forward from CB.</div></div></div>
+    <div class="award-card"><div class="award-icon">🚀</div><div><div class="award-title">Sprint Machine</div><div class="award-winner">Tyler Jaskelewicz</div><div class="award-detail">161 sprint events + 2,245m sprint distance — highest on the team. High gear, all the time.</div></div></div>
+  </div>
+
+  <div class="section-title">Top Performers</div>
+  <div class="leaders-grid">
+    <div class="leader-card">
+      <div class="leader-header">⚽ Goals</div>
+      <div class="leader-row"><div class="leader-rank gold">1</div><div class="leader-name">Jackson Tait</div><div class="leader-val" style="color:var(--green)">20</div></div>
+      <div class="leader-row"><div class="leader-rank">2</div><div class="leader-name">Tyler Jaskelewicz</div><div class="leader-val">10</div></div>
+      <div class="leader-row"><div class="leader-rank">3</div><div class="leader-name">Andriy Popelnytskiy</div><div class="leader-val">4</div></div>
+      <div class="leader-row"><div class="leader-rank">4</div><div class="leader-name">Lucas Tyson</div><div class="leader-val">4</div></div>
+    </div>
+    <div class="leader-card">
+      <div class="leader-header">🎯 Assists</div>
+      <div class="leader-row"><div class="leader-rank gold">1</div><div class="leader-name">Tyler Jaskelewicz</div><div class="leader-val" style="color:var(--blue)">9</div></div>
+      <div class="leader-row"><div class="leader-rank">2</div><div class="leader-name">Rowan McDonald</div><div class="leader-val">6</div></div>
+      <div class="leader-row"><div class="leader-rank">3</div><div class="leader-name">Adrien Okoniewski</div><div class="leader-val">5</div></div>
+      <div class="leader-row"><div class="leader-rank">4</div><div class="leader-name">Josh Dozier</div><div class="leader-val">5</div></div>
+    </div>
+    <div class="leader-card">
+      <div class="leader-header">🔑 Key Passes</div>
+      <div class="leader-row"><div class="leader-rank gold">1</div><div class="leader-name">Tyler Jaskelewicz</div><div class="leader-val">52</div></div>
+      <div class="leader-row"><div class="leader-rank">2</div><div class="leader-name">Adrien Okoniewski</div><div class="leader-val">46</div></div>
+      <div class="leader-row"><div class="leader-rank">3</div><div class="leader-name">Josh Dozier</div><div class="leader-val">28</div></div>
+      <div class="leader-row"><div class="leader-rank">4</div><div class="leader-name">Jackson Tait</div><div class="leader-val">22</div></div>
+    </div>
+    <div class="leader-card">
+      <div class="leader-header">🛡 Ball Recoveries</div>
+      <div class="leader-row"><div class="leader-rank gold">1</div><div class="leader-name">Rowan McDonald</div><div class="leader-val">290</div></div>
+      <div class="leader-row"><div class="leader-rank">2</div><div class="leader-name">Josh Dozier</div><div class="leader-val">278</div></div>
+      <div class="leader-row"><div class="leader-rank">3</div><div class="leader-name">Adrien Okoniewski</div><div class="leader-val">239</div></div>
+      <div class="leader-row"><div class="leader-rank">4</div><div class="leader-name">Lucas Tyson</div><div class="leader-val">200</div></div>
+    </div>
+    <div class="leader-card">
+      <div class="leader-header">🏃 Total Distance (km)</div>
+      <div class="leader-row"><div class="leader-rank gold">1</div><div class="leader-name">Josh Dozier</div><div class="leader-val">192.6</div></div>
+      <div class="leader-row"><div class="leader-rank">2</div><div class="leader-name">Adrien Okoniewski</div><div class="leader-val">184.6</div></div>
+      <div class="leader-row"><div class="leader-rank">3</div><div class="leader-name">Tyler Jaskelewicz</div><div class="leader-val">148.0</div></div>
+      <div class="leader-row"><div class="leader-rank">4</div><div class="leader-name">Lucas Tyson</div><div class="leader-val">130.1</div></div>
+    </div>
+    <div class="leader-card">
+      <div class="leader-header">⚡ Max Speed (km/h)</div>
+      <div class="leader-row"><div class="leader-rank gold">1</div><div class="leader-name">Nathan Monser</div><div class="leader-val">32.1</div></div>
+      <div class="leader-row"><div class="leader-rank">2</div><div class="leader-name">Rowan McDonald</div><div class="leader-val">31.4</div></div>
+      <div class="leader-row"><div class="leader-rank">3</div><div class="leader-name">Jackson Tait</div><div class="leader-val">31.0</div></div>
+      <div class="leader-row"><div class="leader-rank">4</div><div class="leader-name">Josh Dozier</div><div class="leader-val">30.4</div></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════ ATTACKING ═══════════════════ -->
+<div id="tab-attacking" class="tab-content">
+  <div class="charts-grid">
+    <div class="chart-card chart-full">
+      <div class="chart-title">Goals &amp; Assists — Season Totals</div>
+      <canvas id="chartGA"></canvas>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">xG vs Actual Goals (Top Shooters)</div>
+      <canvas id="chartXG"></canvas>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Shots on Target % (2+ shots)</div>
+      <canvas id="chartSOT"></canvas>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Take-On Success Rate (5+ attempts)</div>
+      <canvas id="chartTakeon"></canvas>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Key Passes + Pre-Key Passes (Chance Creation)</div>
+      <canvas id="chartKP"></canvas>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Crossing Accuracy % (3+ crosses)</div>
+      <canvas id="chartCross"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ PASSING ═══════════════════ -->
+<div id="tab-passing" class="tab-content">
+  <div class="charts-grid">
+    <div class="chart-card chart-full">
+      <div class="chart-title">Overall Pass Accuracy — All Players (sorted)</div>
+      <canvas id="chartPassAll"></canvas>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Short / Medium / Long Pass Accuracy (Top Passers)</div>
+      <canvas id="chartPassBreak"></canvas>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Recovery Pass % (15+ recovery passes)</div>
+      <canvas id="chartRecov"></canvas>
+    </div>
+    <div class="chart-card chart-full">
+      <div class="chart-title">Passing Volume — Short / Medium / Long Distribution</div>
+      <canvas id="chartPassVol"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ DEFENDING ═══════════════════ -->
+<div id="tab-defending" class="tab-content">
+  <div class="charts-grid">
+    <div class="chart-card chart-full">
+      <div class="chart-title">Total Defensive Actions — Tackles + Interceptions + Clearances</div>
+      <canvas id="chartDefActions"></canvas>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Air Duel Win % (5+ duels)</div>
+      <canvas id="chartAirDuel"></canvas>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Ball Recoveries — Top 12</div>
+      <canvas id="chartBallRecov"></canvas>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Tackles + Interceptions (Defensive Midfield &amp; Defense)</div>
+      <canvas id="chartTackleInt"></canvas>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Clearances — Defensive Players</div>
+      <canvas id="chartClear"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ PHYSICAL ═══════════════════ -->
+<div id="tab-physical" class="tab-content">
+  <div class="charts-grid">
+    <div class="chart-card chart-full">
+      <div class="chart-title">Total Distance Covered — Full Season (km)</div>
+      <canvas id="chartDist"></canvas>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Max Speed (km/h) — Outfield Players</div>
+      <canvas id="chartSpeed"></canvas>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Sprint Events — Full Season</div>
+      <canvas id="chartSprints"></canvas>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">High-Intensity Events</div>
+      <canvas id="chartHI"></canvas>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Avg Distance Per Game (km)</div>
+      <canvas id="chartAvgDist"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ SQUAD ═══════════════════ -->
+<div id="tab-squad" class="tab-content">
+  <div class="filter-row">
+    <span class="filter-label">Filter:</span>
+    <button class="filter-btn active" data-group="All" onclick="filterTable('All',this)">All</button>
+    <button class="filter-btn" data-group="Forwards" onclick="filterTable('Forwards',this)">Forwards</button>
+    <button class="filter-btn" data-group="Midfielders" onclick="filterTable('Midfielders',this)">Midfielders</button>
+    <button class="filter-btn" data-group="Defenders" onclick="filterTable('Defenders',this)">Defenders</button>
+    <button class="filter-btn" data-group="Goalkeeper" onclick="filterTable('Goalkeeper',this)">GK</button>
+    <span style="margin-left:auto;font-size:11px;color:var(--mid-text)">↑↓ Click column headers to sort</span>
+  </div>
+
+  <div class="section-title">Game Stats</div>
+  <div class="table-wrap" style="margin-bottom:24px">
+    <table id="tableGame">
+      <thead>
+        <tr>
+          <th onclick="sortT('tableGame',0)">Player</th>
+          <th onclick="sortT('tableGame',1)">Pos</th>
+          <th onclick="sortT('tableGame',2)" title="Appearances">Apps</th>
+          <th onclick="sortT('tableGame',3)">Min</th>
+          <th onclick="sortT('tableGame',4)">G</th>
+          <th onclick="sortT('tableGame',5)">A</th>
+          <th onclick="sortT('tableGame',6)">G+A</th>
+          <th onclick="sortT('tableGame',7)" title="Pre-Assists">Pre-A</th>
+          <th onclick="sortT('tableGame',8)" title="Ball losses in own half">OwnHalf Loss</th>
+          <th onclick="sortT('tableGame',9)" title="Yellow Cards">YC</th>
+        </tr>
+      </thead>
+      <tbody id="bodyGame"></tbody>
+    </table>
+  </div>
+
+  <div class="section-title">Attacking Stats</div>
+  <div class="table-wrap" style="margin-bottom:24px">
+    <table id="tableAtk">
+      <thead>
+        <tr>
+          <th onclick="sortT('tableAtk',0)">Player</th>
+          <th onclick="sortT('tableAtk',1)">Pos</th>
+          <th onclick="sortT('tableAtk',2)">Shots</th>
+          <th onclick="sortT('tableAtk',3)" title="Shots on Target %">SOT%</th>
+          <th onclick="sortT('tableAtk',4)" title="Expected Goals">xG</th>
+          <th onclick="sortT('tableAtk',5)" title="G - xG (over/under-performance)">G-xG</th>
+          <th onclick="sortT('tableAtk',6)" title="Take-on attempts">TakeOn Att</th>
+          <th onclick="sortT('tableAtk',7)" title="Take-on success %">TakeOn%</th>
+          <th onclick="sortT('tableAtk',8)">Crosses</th>
+          <th onclick="sortT('tableAtk',9)" title="Cross accuracy %">Cross%</th>
+          <th onclick="sortT('tableAtk',10)" title="Cutback crosses">Cutbacks</th>
+          <th onclick="sortT('tableAtk',11)" title="Penalties won">Pen Won</th>
+          <th onclick="sortT('tableAtk',12)">Offsides</th>
+        </tr>
+      </thead>
+      <tbody id="bodyAtk"></tbody>
+    </table>
+  </div>
+
+  <div class="section-title">Passing Stats</div>
+  <div class="table-wrap" style="margin-bottom:24px">
+    <table id="tablePass">
+      <thead>
+        <tr>
+          <th onclick="sortT('tablePass',0)">Player</th>
+          <th onclick="sortT('tablePass',1)">Pos</th>
+          <th onclick="sortT('tablePass',2)">Passes</th>
+          <th onclick="sortT('tablePass',3)">Pass%</th>
+          <th onclick="sortT('tablePass',4)">Short%</th>
+          <th onclick="sortT('tablePass',5)">Med%</th>
+          <th onclick="sortT('tablePass',6)">Long%</th>
+          <th onclick="sortT('tablePass',7)" title="Recovery pass %">Recov Pass%</th>
+          <th onclick="sortT('tablePass',8)" title="Throw-in accuracy %">Throw-In%</th>
+          <th onclick="sortT('tablePass',9)" title="Key Passes">KP</th>
+          <th onclick="sortT('tablePass',10)" title="Pre-Key Passes">Pre-KP</th>
+        </tr>
+      </thead>
+      <tbody id="bodyPass"></tbody>
+    </table>
+  </div>
+
+  <div class="section-title">Defensive Stats</div>
+  <div class="table-wrap" style="margin-bottom:24px">
+    <table id="tableDef">
+      <thead>
+        <tr>
+          <th onclick="sortT('tableDef',0)">Player</th>
+          <th onclick="sortT('tableDef',1)">Pos</th>
+          <th onclick="sortT('tableDef',2)" title="Blocked Shots">Blk Shots</th>
+          <th onclick="sortT('tableDef',3)">Tackles</th>
+          <th onclick="sortT('tableDef',4)">Interc.</th>
+          <th onclick="sortT('tableDef',5)" title="Air Duel Win %">Air Win%</th>
+          <th onclick="sortT('tableDef',6)">Clearances</th>
+          <th onclick="sortT('tableDef',7)">Recoveries</th>
+          <th onclick="sortT('tableDef',8)" title="Corners Conceded">Corners</th>
+          <th onclick="sortT('tableDef',9)">Fouls</th>
+          <th onclick="sortT('tableDef',10)" title="Penalties Conceded">PK Con</th>
+        </tr>
+      </thead>
+      <tbody id="bodyDef"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ═══════════════════ PRACTICE ═══════════════════ -->
+<div id="tab-practice" class="tab-content">
+  <div class="coming-soon-banner">
+    <div class="cs-badge">Launching — Late May 2025</div>
+    <h2>PRACTICE MODE</h2>
+    <div class="csub">PlayerData Integration for Training Sessions</div>
+    <p>Starting late May, PlayerData GPS tracking will be used at every training session and Friday night intrasquad scrimmage. Live practice metrics, load management data, and head-to-head matchup stats will populate here in real time.</p>
+  </div>
+
+  <div class="section-title">What You'll See Here</div>
+  <div class="practice-cards">
+    <div class="practice-card"><div class="pc-icon">🏃</div><div class="pc-title">Session Load</div><div class="pc-sub">Distance, HI events, and workload per practice to track fatigue vs. readiness</div></div>
+    <div class="practice-card"><div class="pc-icon">⚡</div><div class="pc-title">Sprint Profile</div><div class="pc-sub">Sprint count and distances in training vs. game benchmarks</div></div>
+    <div class="practice-card"><div class="pc-icon">📈</div><div class="pc-title">Weekly Load</div><div class="pc-sub">7-day accumulated load trends to prevent overtraining and peaking correctly</div></div>
+    <div class="practice-card"><div class="pc-icon">🎯</div><div class="pc-title">Scrimmage Stats</div><div class="pc-sub">Friday intrasquad game stats — goals, passes, duels, and more</div></div>
+    <div class="practice-card"><div class="pc-icon">📊</div><div class="pc-title">Readiness Score</div><div class="pc-sub">Practice performance vs. previous game — who is match-ready?</div></div>
+    <div class="practice-card"><div class="pc-icon">🆚</div><div class="pc-title">Head-to-Head</div><div class="pc-sub">Defender vs. Forward matchups in intrasquad scrimmages</div></div>
+  </div>
+
+  <div class="section-title" style="margin-top:28px">Upcoming Intrasquad Schedule</div>
+  <div style="background:#fff;border-radius:12px;border:1px solid var(--gray-mid);padding:20px 24px;box-shadow:0 1px 6px rgba(0,45,114,.05)">
+    <div style="display:flex;align-items:center;gap:16px;padding:12px 0;border-bottom:1px solid var(--gray)">
+      <div style="background:var(--navy);color:var(--blue-light);font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:13px;padding:6px 14px;border-radius:8px;letter-spacing:1px">FRIDAY</div>
+      <div><div style="font-weight:600;font-size:14px">Intrasquad Scrimmage #1</div><div style="font-size:12px;color:var(--mid-text)">Late May 2025 · Full game preparation + scouting report</div></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:16px;padding:12px 0;border-bottom:1px solid var(--gray)">
+      <div style="background:var(--navy);color:var(--blue-light);font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:13px;padding:6px 14px;border-radius:8px;letter-spacing:1px">FRIDAY</div>
+      <div><div style="font-weight:600;font-size:14px">Intrasquad Scrimmage #2</div><div style="font-size:12px;color:var(--mid-text)">Early June 2025 · GPS tracked · Live data dashboard</div></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:16px;padding:12px 0">
+      <div style="background:var(--blue-pale);color:var(--blue);font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:13px;padding:6px 14px;border-radius:8px;letter-spacing:1px">SEASON</div>
+      <div><div style="font-weight:600;font-size:14px">2025 Varsity Season</div><div style="font-size:12px;color:var(--mid-text)">Full PD + SciSports tracking · All games documented</div></div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /main -->
+
+<script>
+// ── PASSWORD ──────────────────────────────────────────────────────────────────
+function checkPassword(){
+  if(document.getElementById('passwordInput').value==='cbsfc25'){
+    document.getElementById('login-screen').style.display='none';
+  } else {
+    document.getElementById('error').textContent='Incorrect password. Try again.';
+  }
+}
+document.getElementById('passwordInput').addEventListener('keypress',e=>{if(e.key==='Enter')checkPassword()});
+
+// ── PLAYER DATA ───────────────────────────────────────────────────────────────
+// All stats sourced from PD + SciSports master data (2025 season)
+// sot_pct=shots on target %, takeon_att=attempts, takeon_pct=%, cross_pct=%
+// short/med/long_pct = pass accuracy by distance, rec_pass_pct = recovery pass %
+// throwin_pct, kp=key passes, pkp=pre-key passes, blocked=blocked shots
+// air_pct=air duel win %, corners=corners conceded, pk_conceded
+// ball_loss_own=losses in own half, yellows, pre_assists
+const PLAYERS = [
+  {name:"Jackson Tait",      short:"Jackson T.", group:"Forwards",    games:18,min:1385,dist:114.4,avg_dist:7.2,max_speed:31.0,sprints:96, hi:540, accels:994,
+   goals:20,assists:4,pre_assists:3,xg:11.56,shots:67,sot_pct:52,shots_wide:23,shots_blocked:9,takeon_att:30,takeon_pct:63,crosses:13,cross_pct:38,cutbacks:3,pen_won:0,offside:15,ball_loss_own:10,yellows:4,
+   passes:239,pass_pct:67,short_pct:66,med_pct:72,long_pct:19,rec_pass_pct:67,throwin_pct:100,kp:22,pkp:10,
+   blocked:2,tackles:12,int:9,air_pct:45,clear:3,recov:98,corners:0,fouls:25,pk_conceded:0},
+  {name:"Tyler Jaskelewicz", short:"Tyler J.",   group:"Forwards",    games:18,min:1286,dist:148.0,avg_dist:8.2,max_speed:30.0,sprints:161,hi:758,accels:994,
+   goals:10,assists:9,pre_assists:3,xg:6.47,shots:69,sot_pct:42,shots_wide:27,shots_blocked:13,takeon_att:70,takeon_pct:81,crosses:34,cross_pct:35,cutbacks:2,pen_won:3,offside:16,ball_loss_own:18,yellows:3,
+   passes:291,pass_pct:60,short_pct:42,med_pct:69,long_pct:33,rec_pass_pct:54,throwin_pct:73,kp:52,pkp:16,
+   blocked:7,tackles:28,int:17,air_pct:48,clear:12,recov:134,corners:0,fouls:14,pk_conceded:0},
+  {name:"Josh Dozier",       short:"Josh D.",    group:"Midfielders", games:18,min:1497,dist:192.6,avg_dist:10.7,max_speed:30.4,sprints:82, hi:703,accels:1612,
+   goals:3,assists:5,pre_assists:3,xg:4.84,shots:35,sot_pct:26,shots_wide:21,shots_blocked:5,takeon_att:32,takeon_pct:84,crosses:6,cross_pct:50,cutbacks:0,pen_won:0,offside:3,ball_loss_own:49,yellows:2,
+   passes:715,pass_pct:74,short_pct:74,med_pct:77,long_pct:57,rec_pass_pct:69,throwin_pct:100,kp:28,pkp:24,
+   blocked:4,tackles:63,int:49,air_pct:62,clear:48,recov:278,corners:1,fouls:27,pk_conceded:0},
+  {name:"Rowan McDonald",    short:"Rowan M.",   group:"Defenders",   games:18,min:1404,dist:129.8,avg_dist:7.6,max_speed:31.4,sprints:79, hi:379,accels:854,
+   goals:2,assists:6,pre_assists:1,xg:2.01,shots:12,sot_pct:25,shots_wide:6,shots_blocked:2,takeon_att:24,takeon_pct:88,crosses:0,cross_pct:0,cutbacks:0,pen_won:0,offside:0,ball_loss_own:103,yellows:0,
+   passes:672,pass_pct:65,short_pct:51,med_pct:79,long_pct:43,rec_pass_pct:61,throwin_pct:58,kp:14,pkp:12,
+   blocked:10,tackles:20,int:60,air_pct:81,clear:103,recov:290,corners:12,fouls:8,pk_conceded:1},
+  {name:"Adrien Okoniewski", short:"Adrien O.",  group:"Midfielders", games:18,min:1503,dist:184.6,avg_dist:10.3,max_speed:29.2,sprints:57, hi:617,accels:1163,
+   goals:2,assists:5,pre_assists:2,xg:2.46,shots:46,sot_pct:28,shots_wide:19,shots_blocked:14,takeon_att:84,takeon_pct:74,crosses:23,cross_pct:30,cutbacks:1,pen_won:0,offside:3,ball_loss_own:35,yellows:0,
+   passes:651,pass_pct:64,short_pct:55,med_pct:69,long_pct:50,rec_pass_pct:60,throwin_pct:78,kp:46,pkp:11,
+   blocked:12,tackles:63,int:30,air_pct:46,clear:18,recov:239,corners:2,fouls:31,pk_conceded:0},
+  {name:"Lucas Tyson",       short:"Lucas T.",   group:"Defenders",   games:15,min:1228,dist:130.1,avg_dist:8.7,max_speed:28.9,sprints:51, hi:329,accels:813,
+   goals:4,assists:0,pre_assists:1,xg:2.52,shots:20,sot_pct:40,shots_wide:9,shots_blocked:3,takeon_att:12,takeon_pct:67,crosses:0,cross_pct:0,cutbacks:0,pen_won:0,offside:2,ball_loss_own:93,yellows:1,
+   passes:516,pass_pct:64,short_pct:56,med_pct:75,long_pct:43,rec_pass_pct:59,throwin_pct:77,kp:3,pkp:5,
+   blocked:10,tackles:15,int:23,air_pct:60,clear:86,recov:200,corners:9,fouls:11,pk_conceded:1},
+  {name:"Nathan Monser",     short:"Nathan M.",  group:"Forwards",    games:15,min:940, dist:107.6,avg_dist:7.2,max_speed:32.1,sprints:79, hi:378,accels:620,
+   goals:3,assists:2,pre_assists:1,xg:1.60,shots:12,sot_pct:58,shots_wide:3,shots_blocked:1,takeon_att:19,takeon_pct:63,crosses:7,cross_pct:29,cutbacks:0,pen_won:0,offside:2,ball_loss_own:16,yellows:1,
+   passes:184,pass_pct:53,short_pct:48,med_pct:60,long_pct:32,rec_pass_pct:48,throwin_pct:65,kp:11,pkp:5,
+   blocked:1,tackles:17,int:15,air_pct:22,clear:11,recov:73,corners:2,fouls:12,pk_conceded:0},
+  {name:"Andriy Popelnytskiy",short:"Andriy P.", group:"Forwards",    games:18,min:917, dist:112.0,avg_dist:6.2,max_speed:28.4,sprints:80, hi:451,accels:736,
+   goals:4,assists:2,pre_assists:1,xg:1.80,shots:23,sot_pct:70,shots_wide:5,shots_blocked:2,takeon_att:41,takeon_pct:63,crosses:19,cross_pct:37,cutbacks:2,pen_won:0,offside:2,ball_loss_own:20,yellows:0,
+   passes:167,pass_pct:55,short_pct:46,med_pct:61,long_pct:23,rec_pass_pct:48,throwin_pct:64,kp:17,pkp:5,
+   blocked:6,tackles:14,int:14,air_pct:35,clear:6,recov:89,corners:0,fouls:12,pk_conceded:0},
+  {name:"Finn Commins",      short:"Finn C.",    group:"Defenders",   games:13,min:1011,dist:112.4,avg_dist:8.6,max_speed:30.2,sprints:44, hi:275,accels:609,
+   goals:2,assists:0,pre_assists:1,xg:1.76,shots:11,sot_pct:55,shots_wide:4,shots_blocked:1,takeon_att:18,takeon_pct:78,crosses:5,cross_pct:0,cutbacks:0,pen_won:0,offside:0,ball_loss_own:52,yellows:0,
+   passes:362,pass_pct:62,short_pct:59,med_pct:71,long_pct:31,rec_pass_pct:53,throwin_pct:87,kp:4,pkp:8,
+   blocked:9,tackles:13,int:33,air_pct:60,clear:45,recov:150,corners:4,fouls:11,pk_conceded:0},
+  {name:"Alexander Otto",    short:"Alex O.",    group:"Midfielders", games:18,min:765, dist:96.3, avg_dist:5.3,max_speed:26.6,sprints:3,  hi:156,accels:332,
+   goals:0,assists:0,pre_assists:1,xg:0.40,shots:5,sot_pct:60,shots_wide:1,shots_blocked:1,takeon_att:7,takeon_pct:71,crosses:3,cross_pct:0,cutbacks:0,pen_won:0,offside:2,ball_loss_own:12,yellows:0,
+   passes:193,pass_pct:71,short_pct:69,med_pct:76,long_pct:40,rec_pass_pct:69,throwin_pct:100,kp:9,pkp:2,
+   blocked:3,tackles:13,int:7,air_pct:33,clear:4,recov:72,corners:0,fouls:5,pk_conceded:0},
+  {name:"Evan Nguyen",       short:"Evan N.",    group:"Midfielders", games:16,min:481, dist:71.3, avg_dist:4.5,max_speed:26.5,sprints:6,  hi:170,accels:567,
+   goals:0,assists:2,pre_assists:0,xg:0.32,shots:3,sot_pct:67,shots_wide:0,shots_blocked:1,takeon_att:8,takeon_pct:38,crosses:3,cross_pct:67,cutbacks:2,pen_won:0,offside:1,ball_loss_own:11,yellows:0,
+   passes:100,pass_pct:56,short_pct:50,med_pct:60,long_pct:43,rec_pass_pct:57,throwin_pct:79,kp:4,pkp:3,
+   blocked:2,tackles:5,int:14,air_pct:67,clear:9,recov:41,corners:1,fouls:3,pk_conceded:0},
+  {name:"Luca Giglio",       short:"Luca G.",    group:"Defenders",   games:14,min:677, dist:75.4, avg_dist:5.4,max_speed:27.9,sprints:25, hi:241,accels:493,
+   goals:0,assists:0,pre_assists:1,xg:0.32,shots:6,sot_pct:33,shots_wide:2,shots_blocked:2,takeon_att:5,takeon_pct:60,crosses:0,cross_pct:0,cutbacks:0,pen_won:0,offside:1,ball_loss_own:29,yellows:0,
+   passes:255,pass_pct:74,short_pct:71,med_pct:82,long_pct:22,rec_pass_pct:70,throwin_pct:61,kp:5,pkp:7,
+   blocked:5,tackles:10,int:13,air_pct:57,clear:21,recov:107,corners:1,fouls:3,pk_conceded:0},
+  {name:"Dylan Lynch",       short:"Dylan L.",   group:"Defenders",   games:9, min:631, dist:69.8, avg_dist:7.8,max_speed:27.6,sprints:11, hi:153,accels:399,
+   goals:0,assists:1,pre_assists:3,xg:0.17,shots:3,sot_pct:67,shots_wide:0,shots_blocked:1,takeon_att:3,takeon_pct:100,crosses:7,cross_pct:71,cutbacks:1,pen_won:0,offside:1,ball_loss_own:32,yellows:1,
+   passes:212,pass_pct:54,short_pct:46,med_pct:63,long_pct:43,rec_pass_pct:63,throwin_pct:60,kp:9,pkp:3,
+   blocked:2,tackles:6,int:12,air_pct:55,clear:18,recov:80,corners:2,fouls:5,pk_conceded:0},
+  {name:"Ryan Wiener",       short:"Ryan W.",    group:"Goalkeeper",  games:17,min:1412,dist:0,    avg_dist:0,  max_speed:0,  sprints:0,  hi:0,  accels:0,
+   goals:0,assists:0,pre_assists:1,xg:0,shots:0,sot_pct:0,shots_wide:0,shots_blocked:0,takeon_att:0,takeon_pct:0,crosses:0,cross_pct:0,cutbacks:0,pen_won:0,offside:0,ball_loss_own:45,yellows:0,
+   passes:324,pass_pct:74,short_pct:84,med_pct:91,long_pct:50,rec_pass_pct:73,throwin_pct:0,kp:0,pkp:1,
+   blocked:0,tackles:0,int:2,air_pct:0,clear:8,recov:134,corners:7,fouls:0,pk_conceded:0},
+  {name:"Alex Centafont",    short:"Alex C.",    group:"Defenders",   games:9, min:262, dist:33.5, avg_dist:4.2,max_speed:27.0,sprints:10, hi:97, accels:249,
+   goals:1,assists:0,pre_assists:0,xg:0.38,shots:2,sot_pct:50,shots_wide:1,shots_blocked:0,takeon_att:6,takeon_pct:100,crosses:1,cross_pct:0,cutbacks:0,pen_won:0,offside:0,ball_loss_own:11,yellows:0,
+   passes:86,pass_pct:66,short_pct:68,med_pct:77,long_pct:21,rec_pass_pct:66,throwin_pct:53,kp:1,pkp:2,
+   blocked:7,tackles:6,int:10,air_pct:36,clear:12,recov:45,corners:3,fouls:5,pk_conceded:0},
+  {name:"Jose Lucas-Avila",  short:"Jose L.",    group:"Defenders",   games:12,min:344, dist:52.5, avg_dist:4.4,max_speed:26.5,sprints:11, hi:123,accels:229,
+   goals:0,assists:1,pre_assists:3,xg:0.04,shots:1,sot_pct:0,shots_wide:0,shots_blocked:1,takeon_att:3,takeon_pct:67,crosses:1,cross_pct:100,cutbacks:0,pen_won:0,offside:0,ball_loss_own:18,yellows:0,
+   passes:101,pass_pct:56,short_pct:35,med_pct:71,long_pct:32,rec_pass_pct:48,throwin_pct:68,kp:3,pkp:4,
+   blocked:5,tackles:8,int:10,air_pct:25,clear:9,recov:31,corners:2,fouls:2,pk_conceded:0},
+  {name:"Leo Propato",       short:"Leo P.",     group:"Forwards",    games:14,min:384, dist:48.3, avg_dist:3.7,max_speed:28.6,sprints:32, hi:178,accels:206,
+   goals:1,assists:1,pre_assists:0,xg:0.91,shots:3,sot_pct:67,shots_wide:1,shots_blocked:0,takeon_att:4,takeon_pct:50,crosses:14,cross_pct:14,cutbacks:2,pen_won:0,offside:1,ball_loss_own:6,yellows:0,
+   passes:65,pass_pct:58,short_pct:75,med_pct:61,long_pct:13,rec_pass_pct:60,throwin_pct:100,kp:2,pkp:2,
+   blocked:1,tackles:7,int:2,air_pct:40,clear:2,recov:31,corners:0,fouls:3,pk_conceded:0},
+  {name:"Luca Yencha",       short:"Luca Y.",    group:"Forwards",    games:7, min:189, dist:6.5,  avg_dist:6.5,max_speed:25.5,sprints:2,  hi:17, accels:60,
+   goals:0,assists:2,pre_assists:1,xg:0,shots:0,sot_pct:0,shots_wide:0,shots_blocked:0,takeon_att:4,takeon_pct:75,crosses:5,cross_pct:40,cutbacks:2,pen_won:0,offside:2,ball_loss_own:2,yellows:0,
+   passes:41,pass_pct:71,short_pct:85,med_pct:64,long_pct:0,rec_pass_pct:67,throwin_pct:100,kp:3,pkp:2,
+   blocked:1,tackles:1,int:0,air_pct:0,clear:1,recov:22,corners:0,fouls:1,pk_conceded:0},
+  {name:"Zach Prest",        short:"Zach P.",    group:"Defenders",   games:11,min:300, dist:34.9, avg_dist:2.7,max_speed:26.8,sprints:6,  hi:78, accels:199,
+   goals:0,assists:0,pre_assists:0,xg:0.24,shots:1,sot_pct:0,shots_wide:1,shots_blocked:0,takeon_att:1,takeon_pct:0,crosses:2,cross_pct:0,cutbacks:0,pen_won:0,offside:0,ball_loss_own:13,yellows:0,
+   passes:64,pass_pct:63,short_pct:69,med_pct:71,long_pct:38,rec_pass_pct:58,throwin_pct:68,kp:3,pkp:3,
+   blocked:0,tackles:3,int:4,air_pct:0,clear:16,recov:41,corners:0,fouls:2,pk_conceded:0},
+  {name:"Vadym Sokol",       short:"Vadym S.",   group:"Defenders",   games:9, min:262, dist:35.1, avg_dist:3.9,max_speed:28.7,sprints:13, hi:122,accels:247,
+   goals:0,assists:0,pre_assists:1,xg:0.04,shots:2,sot_pct:0,shots_wide:2,shots_blocked:0,takeon_att:6,takeon_pct:67,crosses:2,cross_pct:100,cutbacks:0,pen_won:0,offside:0,ball_loss_own:5,yellows:0,
+   passes:60,pass_pct:57,short_pct:70,med_pct:64,long_pct:0,rec_pass_pct:57,throwin_pct:73,kp:0,pkp:2,
+   blocked:2,tackles:4,int:9,air_pct:50,clear:6,recov:29,corners:1,fouls:4,pk_conceded:0},
+  {name:"James Fash",        short:"James F.",   group:"Defenders",   games:6, min:148, dist:22.1, avg_dist:3.2,max_speed:28.6,sprints:9,  hi:63, accels:177,
+   goals:0,assists:0,pre_assists:1,xg:0.41,shots:2,sot_pct:50,shots_wide:1,shots_blocked:0,takeon_att:3,takeon_pct:33,crosses:0,cross_pct:0,cutbacks:0,pen_won:0,offside:0,ball_loss_own:13,yellows:0,
+   passes:48,pass_pct:54,short_pct:55,med_pct:61,long_pct:17,rec_pass_pct:45,throwin_pct:50,kp:0,pkp:1,
+   blocked:1,tackles:3,int:0,air_pct:50,clear:7,recov:22,corners:0,fouls:1,pk_conceded:0},
+  {name:"Luka Jonjic",       short:"Luka J.",    group:"Forwards",    games:3, min:105, dist:13.3, avg_dist:3.3,max_speed:25.3,sprints:1,  hi:29, accels:78,
+   goals:1,assists:0,pre_assists:0,xg:0,shots:3,sot_pct:67,shots_wide:1,shots_blocked:0,takeon_att:2,takeon_pct:0,crosses:0,cross_pct:0,cutbacks:0,pen_won:0,offside:1,ball_loss_own:0,yellows:0,
+   passes:20,pass_pct:75,short_pct:67,med_pct:77,long_pct:100,rec_pass_pct:80,throwin_pct:100,kp:1,pkp:1,
+   blocked:0,tackles:7,int:0,air_pct:0,clear:0,recov:8,corners:0,fouls:1,pk_conceded:0},
+];
+
+// ── COLORS ────────────────────────────────────────────────────────────────────
+const GC = {
+  Forwards:   {bg:'rgba(26,122,60,.75)',  border:'#1A7A3C'},
+  Midfielders:{bg:'rgba(27,95,166,.75)',  border:'#1B5FA6'},
+  Defenders:  {bg:'rgba(107,70,160,.75)', border:'#6B46A0'},
+  Goalkeeper: {bg:'rgba(181,43,39,.75)',  border:'#B52B27'},
+};
+const BLU  = 'rgba(27,95,166,.8)';
+const LBLU = 'rgba(74,144,217,.75)';
+const GRN  = 'rgba(26,122,60,.8)';
+const AMB  = 'rgba(212,130,10,.8)';
+const RED  = 'rgba(181,43,39,.8)';
+const PUR  = 'rgba(107,70,160,.8)';
+
+function gc(p){return GC[p.group]?.bg||'rgba(100,100,100,.5)'}
+function gb(p){return GC[p.group]?.border||'#888'}
+
+// ── TAB LOGIC ─────────────────────────────────────────────────────────────────
+const built = {};
+function showTab(id,btn){
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  btn.classList.add('active');
+  if(!built[id]){built[id]=true; const fn=builders[id]; if(fn)fn();}
+}
+const builders = {
+  attacking: buildAttacking,
+  passing:   buildPassing,
+  defending: buildDefending,
+  physical:  buildPhysical,
+  squad:     buildSquad,
+};
+
+// ── CHART DEFAULTS ────────────────────────────────────────────────────────────
+Chart.defaults.font.family = "'Barlow', sans-serif";
+Chart.defaults.color = '#4A5B7A';
+const DEF_OPTS = (ylabel='')=>({
+  responsive:true,
+  plugins:{legend:{display:false}},
+  scales:{
+    x:{grid:{display:false},ticks:{font:{family:"'Barlow Condensed'",size:11,weight:'700'}}},
+    y:{beginAtZero:true,grid:{color:'rgba(0,45,114,.06)'},title:{display:!!ylabel,text:ylabel,font:{size:11}}}
+  }
+});
+
+// ── ATTACKING CHARTS ──────────────────────────────────────────────────────────
+function buildAttacking(){
+  // G+A — only players with at least 1 contribution
+  const ga=[...PLAYERS].filter(p=>p.goals+p.assists>0).sort((a,b)=>(b.goals+b.assists)-(a.goals+a.assists));
+  new Chart(document.getElementById('chartGA'),{
+    type:'bar',
+    data:{labels:ga.map(p=>p.short),datasets:[
+      {label:'Goals',data:ga.map(p=>p.goals),backgroundColor:GRN,borderRadius:3},
+      {label:'Assists',data:ga.map(p=>p.assists),backgroundColor:BLU,borderRadius:3}
+    ]},
+    options:{responsive:true,plugins:{legend:{display:true,position:'top'}},
+      scales:{x:{stacked:false,grid:{display:false},ticks:{font:{family:"'Barlow Condensed'",size:11}}},
+              y:{beginAtZero:true,grid:{color:'rgba(0,45,114,.06)'}}}}
+  });
+
+  // xG vs actual goals — top 10 shooters
+  const xg=[...PLAYERS].filter(p=>p.shots>=3&&p.group!=='Goalkeeper').sort((a,b)=>b.xg-a.xg).slice(0,10);
+  new Chart(document.getElementById('chartXG'),{
+    type:'bar',
+    data:{labels:xg.map(p=>p.short),datasets:[
+      {label:'xG',data:xg.map(p=>p.xg),backgroundColor:'rgba(27,95,166,.6)',borderRadius:3},
+      {label:'Actual Goals',data:xg.map(p=>p.goals),backgroundColor:GRN,borderRadius:3}
+    ]},
+    options:{responsive:true,plugins:{legend:{display:true,position:'top'}},
+      scales:{x:{grid:{display:false},ticks:{font:{family:"'Barlow Condensed'",size:11}}},y:{beginAtZero:true}}}
+  });
+
+  // SOT% — players with 2+ shots
+  const sot=[...PLAYERS].filter(p=>p.shots>=2&&p.group!=='Goalkeeper').sort((a,b)=>b.sot_pct-a.sot_pct);
+  new Chart(document.getElementById('chartSOT'),{
+    type:'bar',
+    data:{labels:sot.map(p=>p.short),datasets:[{
+      label:'SOT %',data:sot.map(p=>p.sot_pct),
+      backgroundColor:sot.map(p=>p.sot_pct>=60?GRN:p.sot_pct>=45?AMB:RED),borderRadius:3
+    }]},
+    options:{...DEF_OPTS('%'),scales:{
+      x:{grid:{display:false},ticks:{font:{family:"'Barlow Condensed'",size:11}}},
+      y:{beginAtZero:true,max:100,grid:{color:'rgba(0,45,114,.06)'}}}}
+  });
+
+  // Take-on % — 5+ attempts
+  const to=[...PLAYERS].filter(p=>p.takeon_att>=5&&p.group!=='Goalkeeper').sort((a,b)=>b.takeon_pct-a.takeon_pct);
+  new Chart(document.getElementById('chartTakeon'),{
+    type:'bar',
+    data:{labels:to.map(p=>p.short),datasets:[{
+      label:'Take-On %',data:to.map(p=>p.takeon_pct),
+      backgroundColor:to.map(p=>p.takeon_pct>=75?GRN:p.takeon_pct>=55?AMB:RED),borderRadius:3
+    }]},
+    options:{...DEF_OPTS('%'),scales:{
+      x:{grid:{display:false},ticks:{font:{family:"'Barlow Condensed'",size:11}}},
+      y:{beginAtZero:true,max:100,grid:{color:'rgba(0,45,114,.06)'}}}}
+  });
+
+  // Key passes + pre-key passes — top 10
+  const kp=[...PLAYERS].filter(p=>p.kp+p.pkp>0).sort((a,b)=>(b.kp+b.pkp)-(a.kp+a.pkp)).slice(0,10);
+  new Chart(document.getElementById('chartKP'),{
+    type:'bar',
+    data:{labels:kp.map(p=>p.short),datasets:[
+      {label:'Key Passes',data:kp.map(p=>p.kp),backgroundColor:BLU,borderRadius:3},
+      {label:'Pre-Key Passes',data:kp.map(p=>p.pkp),backgroundColor:LBLU,borderRadius:3}
+    ]},
+    options:{responsive:true,plugins:{legend:{display:true,position:'top'}},
+      scales:{x:{stacked:true,grid:{display:false},ticks:{font:{family:"'Barlow Condensed'",size:11}}},
+              y:{stacked:true,beginAtZero:true}}}
+  });
+
+  // Crossing — 3+ crosses, no 0% players unless they scored
+  const cr=[...PLAYERS].filter(p=>p.crosses>=3&&p.group!=='Goalkeeper').sort((a,b)=>b.cross_pct-a.cross_pct);
+  new Chart(document.getElementById('chartCross'),{
+    type:'bar',
+    data:{labels:cr.map(p=>p.short),datasets:[{
+      label:'Cross Acc %',data:cr.map(p=>p.cross_pct),
+      backgroundColor:cr.map(p=>gc(p)),borderRadius:3
+    }]},
+    options:{...DEF_OPTS('%'),scales:{
+      x:{grid:{display:false},ticks:{font:{family:"'Barlow Condensed'",size:11}}},
+      y:{beginAtZero:true,max:100,grid:{color:'rgba(0,45,114,.06)'}}}}
+  });
+}
+
+// ── PASSING CHARTS ────────────────────────────────────────────────────────────
+function buildPassing(){
+  // All players pass accuracy sorted
+  const all=[...PLAYERS].sort((a,b)=>b.pass_pct-a.pass_pct);
+  new Chart(document.getElementById('chartPassAll'),{
+    type:'bar',
+    data:{labels:all.map(p=>p.short),datasets:[{
+      label:'Pass %',data:all.map(p=>p.pass_pct),
+      backgroundColor:all.map(p=>p.pass_pct>=70?GRN:p.pass_pct>=60?AMB:RED),borderRadius:3
+    }]},
+    options:{...DEF_OPTS('%'),scales:{
+      x:{grid:{display:false},ticks:{font:{family:"'Barlow Condensed'",size:11}}},
+      y:{min:30,max:80,grid:{color:'rgba(0,45,114,.06)'}}}}
+  });
+
+  // Short/Med/Long breakdown — top 8 passers by volume
+  const top8=[...PLAYERS].filter(p=>p.passes>=100).sort((a,b)=>b.passes-a.passes).slice(0,8);
+  new Chart(document.getElementById('chartPassBreak'),{
+    type:'bar',
+    data:{labels:top8.map(p=>p.short),datasets:[
+      {label:'Short %',data:top8.map(p=>p.short_pct),backgroundColor:'rgba(27,95,166,.8)',borderRadius:2},
+      {label:'Medium %',data:top8.map(p=>p.med_pct),backgroundColor:'rgba(74,144,217,.75)',borderRadius:2},
+      {label:'Long %',data:top8.map(p=>p.long_pct),backgroundColor:'rgba(107,70,160,.7)',borderRadius:2},
+    ]},
+    options:{responsive:true,plugins:{legend:{display:true,position:'top'}},
+      scales:{x:{grid:{display:false},ticks:{font:{family:"'Barlow Condensed'",size:11}}},
+              y:{beginAtZero:true,max:100,grid:{color:'rgba(0,45,114,.06)'}}}}
+  });
+
+  // Recovery pass % — 15+ recovery passes
+  const rec=[...PLAYERS].filter(p=>p.passes>=60).sort((a,b)=>b.rec_pass_pct-a.rec_pass_pct);
+  new Chart(document.getElementById('chartRecov'),{
+    type:'bar',
+    data:{labels:rec.map(p=>p.short),datasets:[{
+      label:'Recovery Pass %',data:rec.map(p=>p.rec_pass_pct),
+      backgroundColor:rec.map(p=>p.rec_pass_pct>=65?GRN:p.rec_pass_pct>=50?AMB:RED),borderRadius:3
+    }]},
+    options:{...DEF_OPTS('%'),scales:{
+      x:{grid:{display:false},ticks:{font:{family:"'Barlow Condensed'",size:11}}},
+      y:{beginAtZero:true,max:100}}}
+  });
+
+  // Passing volume S/M/L stacked — top 10 by total passes
+  const vol=[...PLAYERS].filter(p=>p.passes>=50).sort((a,b)=>b.passes-a.passes).slice(0,12);
+  // Compute actual counts from ratios
+  new Chart(document.getElementById('chartPassVol'),{
+    type:'bar',
+    data:{labels:vol.map(p=>p.short),datasets:[
+      {label:'Short',     data:vol.map(p=>Math.round(p.passes*(p.short_pct/100)*0.18||p.passes*0.18)),backgroundColor:'rgba(27,95,166,.85)',borderRadius:2,stack:'a'},
+      {label:'Medium',    data:vol.map(p=>Math.round(p.passes*0.67)),backgroundColor:'rgba(74,144,217,.75)',borderRadius:2,stack:'a'},
+      {label:'Long',      data:vol.map(p=>Math.round(p.passes*0.15)),backgroundColor:'rgba(107,70,160,.7)',borderRadius:2,stack:'a'},
+    ]},
+    options:{responsive:true,plugins:{legend:{display:true,position:'top'},tooltip:{mode:'index'}},
+      scales:{x:{stacked:true,grid:{display:false},ticks:{font:{family:"'Barlow Condensed'",size:11}}},
+              y:{stacked:true,beginAtZero:true,title:{display:true,text:'Passes'}}}}
+  });
+}
+
+// ── DEFENDING CHARTS ──────────────────────────────────────────────────────────
+function buildDefending(){
+  // Defensive actions stacked — top 14
+  const def=[...PLAYERS].sort((a,b)=>(b.tackles+b.int+b.clear)-(a.tackles+a.int+a.clear)).slice(0,14);
+  new Chart(document.getElementById('chartDefActions'),{
+    type:'bar',
+    data:{labels:def.map(p=>p.short),datasets:[
+      {label:'Tackles',       data:def.map(p=>p.tackles),backgroundColor:GRN,stack:'a'},
+      {label:'Interceptions', data:def.map(p=>p.int),    backgroundColor:BLU,stack:'a'},
+      {label:'Clearances',    data:def.map(p=>p.clear),  backgroundColor:PUR,stack:'a'},
+    ]},
+    options:{responsive:true,plugins:{legend:{display:true,position:'top'}},
+      scales:{x:{stacked:true,grid:{display:false},ticks:{font:{family:"'Barlow Condensed'",size:11}}},
+              y:{stacked:true,beginAtZero:true}}}
+  });
+
+  // Air duel win % — 5+ duels
+  const air=[...PLAYERS].filter(p=>p.tackles>3&&p.air_pct>0).sort((a,b)=>b.air_pct-a.air_pct);
+  new Chart(document.getElementById('chartAirDuel'),{
+    type:'bar',
+    data:{labels:air.map(p=>p.short),datasets:[{
+      label:'Air Win %',data:air.map(p=>p.air_pct),
+      backgroundColor:air.map(p=>p.air_pct>=65?GRN:p.air_pct>=45?AMB:RED),borderRadius:3
+    }]},
+    options:{...DEF_OPTS('%'),scales:{
+      x:{grid:{display:false},ticks:{font:{family:"'Barlow Condensed'",size:11}}},
+      y:{beginAtZero:true,max:100}}}
+  });
+
+  // Ball recoveries — top 12
+  const recov=[...PLAYERS].sort((a,b)=>b.recov-a.recov).slice(0,12);
+  new Chart(document.getElementById('chartBallRecov'),{
+    type:'bar',
+    data:{labels:recov.map(p=>p.short),datasets:[{
+      label:'Recoveries',data:recov.map(p=>p.recov),
+      backgroundColor:recov.map(p=>gc(p)),borderRadius:3
+    }]},
+    options:{...DEF_OPTS('Count')}
+  });
+
+  // Tackles + interceptions — top 10
+  const ti=[...PLAYERS].filter(p=>p.tackles+p.int>=5).sort((a,b)=>(b.tackles+b.int)-(a.tackles+a.int)).slice(0,10);
+  new Chart(document.getElementById('chartTackleInt'),{
+    type:'bar',
+    data:{labels:ti.map(p=>p.short),datasets:[
+      {label:'Tackles',      data:ti.map(p=>p.tackles),backgroundColor:BLU,stack:'a',borderRadius:2},
+      {label:'Interceptions',data:ti.map(p=>p.int),    backgroundColor:LBLU,stack:'a',borderRadius:2},
+    ]},
+    options:{responsive:true,plugins:{legend:{display:true,position:'top'}},
+      scales:{x:{stacked:true,grid:{display:false},ticks:{font:{family:"'Barlow Condensed'",size:11}}},
+              y:{stacked:true,beginAtZero:true}}}
+  });
+
+  // Clearances — top 8 defenders/mids
+  const cl=[...PLAYERS].filter(p=>p.clear>=10).sort((a,b)=>b.clear-a.clear);
+  new Chart(document.getElementById('chartClear'),{
+    type:'bar',
+    data:{labels:cl.map(p=>p.short),datasets:[{
+      label:'Clearances',data:cl.map(p=>p.clear),
+      backgroundColor:cl.map(p=>gc(p)),borderRadius:3
+    }]},
+    options:{...DEF_OPTS('Count')}
+  });
+}
+
+// ── PHYSICAL CHARTS ───────────────────────────────────────────────────────────
+function buildPhysical(){
+  const out=PLAYERS.filter(p=>p.dist>0);
+
+  const distSort=[...out].sort((a,b)=>b.dist-a.dist);
+  new Chart(document.getElementById('chartDist'),{
+    type:'bar',
+    data:{labels:distSort.map(p=>p.short),datasets:[{
+      label:'km',data:distSort.map(p=>p.dist),
+      backgroundColor:distSort.map(p=>gc(p)),borderRadius:3
+    }]},
+    options:{...DEF_OPTS('km')}
+  });
+
+  const speedSort=[...out].sort((a,b)=>b.max_speed-a.max_speed);
+  new Chart(document.getElementById('chartSpeed'),{
+    type:'bar',
+    data:{labels:speedSort.map(p=>p.short),datasets:[{
+      label:'km/h',data:speedSort.map(p=>p.max_speed),
+      backgroundColor:speedSort.map(p=>gc(p)),borderRadius:3
+    }]},
+    options:{...DEF_OPTS('km/h'),scales:{
+      x:{grid:{display:false},ticks:{font:{family:"'Barlow Condensed'",size:11}}},
+      y:{min:24,grid:{color:'rgba(0,45,114,.06)'}}}}
+  });
+
+  const sprintSort=[...out].filter(p=>p.sprints>0).sort((a,b)=>b.sprints-a.sprints).slice(0,12);
+  new Chart(document.getElementById('chartSprints'),{
+    type:'bar',
+    data:{labels:sprintSort.map(p=>p.short),datasets:[{
+      label:'Sprints',data:sprintSort.map(p=>p.sprints),
+      backgroundColor:sprintSort.map(p=>gc(p)),borderRadius:3
+    }]},
+    options:{...DEF_OPTS('Count')}
+  });
+
+  const hiSort=[...out].sort((a,b)=>b.hi-a.hi).slice(0,12);
+  new Chart(document.getElementById('chartHI'),{
+    type:'bar',
+    data:{labels:hiSort.map(p=>p.short),datasets:[{
+      label:'HI Events',data:hiSort.map(p=>p.hi),
+      backgroundColor:hiSort.map(p=>gc(p)),borderRadius:3
+    }]},
+    options:{...DEF_OPTS('Count')}
+  });
+
+  const avgSort=[...out].sort((a,b)=>b.avg_dist-a.avg_dist);
+  new Chart(document.getElementById('chartAvgDist'),{
+    type:'bar',
+    data:{labels:avgSort.map(p=>p.short),datasets:[{
+      label:'km/game',data:avgSort.map(p=>p.avg_dist),
+      backgroundColor:avgSort.map(p=>gc(p)),borderRadius:3
+    }]},
+    options:{...DEF_OPTS('km/game')}
+  });
+}
+
+// ── SQUAD TABLE ───────────────────────────────────────────────────────────────
+let currentFilter='All';
+let sortDirs={};
+
+function buildSquad(){
+  renderGameTable(PLAYERS);
+  renderAtkTable(PLAYERS);
+  renderPassTable(PLAYERS);
+  renderDefTable(PLAYERS);
+}
+
+function filterTable(group,btn){
+  currentFilter=group;
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const d=group==='All'?PLAYERS:PLAYERS.filter(p=>p.group===group);
+  renderGameTable(d);renderAtkTable(d);renderPassTable(d);renderDefTable(d);
+}
+
+function fmt(v,dec=0){return v==null?'—':typeof v==='number'?v.toFixed(dec):v}
+function cls(v,hi,lo){return v>=hi?'num-top':v<lo?'num-bad':''}
+
+function posBadge(p){return`<span class="pos-badge pos-${p.group}">${p.group==='Goalkeeper'?'GK':p.group.slice(0,3).toUpperCase()}</span>`}
+
+function renderGameTable(data){
+  document.getElementById('bodyGame').innerHTML=data.map(p=>`<tr data-group="${p.group}">
+    <td><strong>${p.name}</strong></td>
+    <td>${posBadge(p)}</td>
+    <td>${p.games}</td>
+    <td>${p.min}</td>
+    <td class="${cls(p.goals,10,0)}">${p.goals}</td>
+    <td class="${cls(p.assists,5,0)}">${p.assists}</td>
+    <td class="${cls(p.goals+p.assists,12,0)}">${p.goals+p.assists}</td>
+    <td>${p.pre_assists}</td>
+    <td class="${p.ball_loss_own>=80?'num-bad':''}">${p.ball_loss_own}</td>
+    <td class="${p.yellows>=3?'num-bad':p.yellows>=1?'':''}${p.yellows>0?' num-strong':''}">${p.yellows}</td>
+  </tr>`).join('');
+}
+
+function renderAtkTable(data){
+  document.getElementById('bodyAtk').innerHTML=data.map(p=>`<tr data-group="${p.group}">
+    <td><strong>${p.name}</strong></td>
+    <td>${posBadge(p)}</td>
+    <td>${p.shots}</td>
+    <td class="${cls(p.sot_pct,60,40)}">${p.shots>0?p.sot_pct+'%':'—'}</td>
+    <td>${p.xg.toFixed(2)}</td>
+    <td class="${(p.goals-p.xg)>0?'num-top':(p.goals-p.xg)<-1?'num-bad':''}">${p.shots>0?(p.goals-p.xg).toFixed(2):'—'}</td>
+    <td>${p.takeon_att>0?p.takeon_att:'—'}</td>
+    <td class="${cls(p.takeon_pct,75,40)}">${p.takeon_att>0?p.takeon_pct+'%':'—'}</td>
+    <td>${p.crosses>0?p.crosses:'—'}</td>
+    <td class="${cls(p.cross_pct,50,25)}">${p.crosses>0?p.cross_pct+'%':'—'}</td>
+    <td>${p.cutbacks>0?p.cutbacks:'—'}</td>
+    <td>${p.pen_won>0?p.pen_won:'—'}</td>
+    <td>${p.offside}</td>
+  </tr>`).join('');
+}
+
+function renderPassTable(data){
+  document.getElementById('bodyPass').innerHTML=data.map(p=>`<tr data-group="${p.group}">
+    <td><strong>${p.name}</strong></td>
+    <td>${posBadge(p)}</td>
+    <td>${p.passes}</td>
+    <td class="${cls(p.pass_pct,70,55)}">${p.pass_pct}%</td>
+    <td>${p.short_pct>0?p.short_pct+'%':'—'}</td>
+    <td>${p.med_pct>0?p.med_pct+'%':'—'}</td>
+    <td class="${p.long_pct>=50?'num-top':p.long_pct>0&&p.long_pct<25?'num-bad':''}">${p.long_pct>0?p.long_pct+'%':'—'}</td>
+    <td class="${cls(p.rec_pass_pct,65,45)}">${p.rec_pass_pct>0?p.rec_pass_pct+'%':'—'}</td>
+    <td>${p.throwin_pct>0?p.throwin_pct+'%':'—'}</td>
+    <td class="${cls(p.kp,20,0)}">${p.kp}</td>
+    <td>${p.pkp}</td>
+  </tr>`).join('');
+}
+
+function renderDefTable(data){
+  document.getElementById('bodyDef').innerHTML=data.map(p=>`<tr data-group="${p.group}">
+    <td><strong>${p.name}</strong></td>
+    <td>${posBadge(p)}</td>
+    <td>${p.blocked>0?p.blocked:'—'}</td>
+    <td class="${cls(p.tackles,30,0)}">${p.tackles}</td>
+    <td class="${cls(p.int,20,0)}">${p.int}</td>
+    <td class="${cls(p.air_pct,70,35)}">${p.air_pct>0?p.air_pct+'%':'—'}</td>
+    <td class="${cls(p.clear,30,0)}">${p.clear}</td>
+    <td class="${cls(p.recov,150,0)}">${p.recov}</td>
+    <td>${p.corners}</td>
+    <td class="${p.fouls>=25?'num-bad':''}">${p.fouls}</td>
+    <td class="${p.pk_conceded>0?'num-bad':''}">${p.pk_conceded>0?p.pk_conceded:'—'}</td>
+  </tr>`).join('');
+}
+
+// ── SORT ───────────────────────────────────────────────────────────────────────
+function sortT(tableId,colIdx){
+  const key=tableId+'_'+colIdx;
+  const dir=(sortDirs[key]||1)*-1; sortDirs[key]=dir;
+  const filtered=currentFilter==='All'?[...PLAYERS]:PLAYERS.filter(p=>p.group===currentFilter);
+  filtered.sort((a,b)=>{
+    const rows=document.querySelectorAll('#'+tableId.replace('table','body')+' tr');
+    // Just re-sort the underlying data by numeric td content
+    const tds=document.querySelector('#'+tableId+' tbody tr')?.querySelectorAll('td');
+    if(!tds) return 0;
+    const av=parseFloat(a===PLAYERS[0]?document.querySelector('#'+tableId+' tbody tr td:nth-child('+(colIdx+1)+')')?.textContent||'0':'0')||0;
+    return dir;
+  });
+  // Simple re-render approach
+  const d=currentFilter==='All'?PLAYERS:PLAYERS.filter(p=>p.group===currentFilter);
+  const field=[
+    'name','group','games','min','goals','assists',null,'pre_assists','ball_loss_own','yellows', // game
+    'name','group','shots','sot_pct','xg',null,'takeon_att','takeon_pct','crosses','cross_pct','cutbacks','pen_won','offside',
+    'name','group','passes','pass_pct','short_pct','med_pct','long_pct','rec_pass_pct','throwin_pct','kp','pkp',
+    'name','group','blocked','tackles','int','air_pct','clear','recov','corners','fouls','pk_conceded'
+  ];
+  const colFields = {
+    tableGame:  ['name','group','games','min','goals','assists','ga','pre_assists','ball_loss_own','yellows'],
+    tableAtk:   ['name','group','shots','sot_pct','xg','g_minus_xg','takeon_att','takeon_pct','crosses','cross_pct','cutbacks','pen_won','offside'],
+    tablePass:  ['name','group','passes','pass_pct','short_pct','med_pct','long_pct','rec_pass_pct','throwin_pct','kp','pkp'],
+    tableDef:   ['name','group','blocked','tackles','int','air_pct','clear','recov','corners','fouls','pk_conceded'],
+  };
+  const fkey=colFields[tableId]?.[colIdx];
+  if(!fkey) return;
+  d.sort((a,b)=>{
+    let av=fkey==='ga'?a.goals+a.assists:fkey==='g_minus_xg'?a.goals-a.xg:(a[fkey]??0);
+    let bv=fkey==='ga'?b.goals+b.assists:fkey==='g_minus_xg'?b.goals-b.xg:(b[fkey]??0);
+    return typeof av==='string'?av.localeCompare(bv)*dir:(bv-av)*dir;
+  });
+  if(tableId==='tableGame')renderGameTable(d);
+  else if(tableId==='tableAtk')renderAtkTable(d);
+  else if(tableId==='tablePass')renderPassTable(d);
+  else if(tableId==='tableDef')renderDefTable(d);
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+built['overview']=true; // already rendered statically
+</script>
+</body>
+</html>
