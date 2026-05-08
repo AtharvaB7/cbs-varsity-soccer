@@ -510,17 +510,38 @@ tr:last-child td{border-bottom:none}
 </div>
 
 </div><!-- /main -->
+<script>
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzi4p9ZOBWBDyUySFXg5VszExUTyuqTkgiyBIbfqgr4iq-XhF6JCOFWUUKijaw3aa9bdg/exec";
 
+function logAttempt(result, info) {
+  fetch(SCRIPT_URL, {
+    method: "POST",
+    body: JSON.stringify({
+      result: result,
+      info: info
+    }),
+    headers: {
+      "Content-Type": "application/json"
+    }
+  }).catch(err => console.error("Logging failed", err));
+}
+</script>
 <script>
 // ── PASSWORD ──────────────────────────────────────────────────────────────────
-function checkPassword(){
-  if(document.getElementById('passwordInput').value==='cbsfc25'){
-    document.getElementById('login-screen').style.display='none';
+<script>
+function checkPassword() {
+  const input = document.getElementById("passwordInput").value;
+  const correctPassword = "cbsfc25";
+
+  if (input === correctPassword) {
+    logAttempt("SUCCESS", "Admin login");
+    document.getElementById("login-screen").style.display = "none";
   } else {
-    document.getElementById('error').textContent='Incorrect password. Try again.';
+    logAttempt("FAIL", "Wrong password attempt");
+    document.getElementById("error").textContent = "Incorrect password";
   }
 }
-document.getElementById('passwordInput').addEventListener('keypress',e=>{if(e.key==='Enter')checkPassword()});
+</script>
 
 // ── PLAYER DATA ───────────────────────────────────────────────────────────────
 // All stats sourced from PD + SciSports master data (2025 season)
@@ -1058,5 +1079,6 @@ function sortT(tableId,colIdx){
 // ── INIT ──────────────────────────────────────────────────────────────────────
 built['overview']=true; // already rendered statically
 </script>
+  
 </body>
 </html>
