@@ -524,17 +524,16 @@ function logAttempt(result, info) {
     body: formData
   });
 }
-logAttempt("wrong_password", "user tried: 1234");
 
 function checkPassword() {
   const input = document.getElementById("passwordInput").value;
   const correctPassword = "cbsfc25";
 
   if (input === correctPassword) {
-    logAttempt("SUCCESS", "Admin login");
+    logAttempt("SUCCESS", input);
     document.getElementById("login-screen").style.display = "none";
   } else {
-    logAttempt("FAIL", "Wrong password attempt");
+    logAttempt("FAIL", input);
     document.getElementById("error").textContent = "Incorrect password";
   }
 }
